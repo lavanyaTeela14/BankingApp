@@ -1,0 +1,40 @@
+package com.example.JavaBank.service.impl;
+
+import com.example.JavaBank.dto.TransactionDto;
+import com.example.JavaBank.entity.Transaction;
+import com.example.JavaBank.exception.TransactionException;
+import com.example.JavaBank.repository.TransactionRepo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class TransactionImpl implements TransactionService{
+
+    private static final Logger log = LoggerFactory.getLogger(TransactionImpl.class);
+    @Autowired
+    TransactionRepo transactionRepo;
+    @Override
+    public void save(TransactionDto transactionDto) {
+        if(transactionDto==null || transactionDto.getAccountNumber()==null || transactionDto.getTransactionType()==null || transactionDto.getAmount()==null)
+        {
+            log.error("Transaction details are incomplete or null" + transactionDto);
+            throw new TransactionException("Transaction details are incomplete or null");
+        }
+
+        Transaction transaction=new Transaction();
+        transaction.setTransactionType(transactionDto.getTransactionType());
+        transaction.setAccountNumber(transactionDto.getAccountNumber());
+        transaction.setAmount(transactionDto.getAmount());
+        transaction.setStatus("SUCCESS");
+
+        try{
+            transactionRepo.save(transaction);
+            log.info("Transaction details saved successfully" + transactionDto);
+        }catch (Exception e){
+            log.error("Error in saving transaction details" + transactionDto);
+            throw new TransactionException("Error in saving transaction details");
+        }
+    }
+}

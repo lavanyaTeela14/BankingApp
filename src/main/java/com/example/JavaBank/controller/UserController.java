@@ -1,0 +1,124 @@
+package com.example.JavaBank.controller;
+
+import com.example.JavaBank.dto.*;
+import com.example.JavaBank.exception.BankException;
+import com.example.JavaBank.exception.TransactionException;
+import com.example.JavaBank.service.impl.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/users")
+public class UserController {
+
+    @Autowired
+    private UserService userService;
+
+    @PostMapping
+    public ResponseEntity<BankResponse> createAccount(@RequestBody UserRequest userRequest) {
+        try{
+            BankResponse response = userService.createAccount(userRequest);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        }catch (Exception e){
+            throw new TransactionException("Error in creating account"+e.getMessage(),e);
+        }
+    }
+
+    @GetMapping("balanceEnquiry/{accountNumber}")
+    public ResponseEntity<BankResponse> balanceEnquiry(@PathVariable String accountNumber) {
+        try{
+            EnquiryRequest enquiryRequest=new EnquiryRequest(accountNumber);
+            BankResponse response = userService.accountBalanceEnquiry(enquiryRequest);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }catch (Exception e){
+            throw new TransactionException("Error in balance enquiry"+e.getMessage(),e);
+        }
+    }
+
+    @GetMapping("nameEnquiry/{accountNumber}")
+    public String nameEnquiry(@PathVariable String accountNumber){
+        try{
+            EnquiryRequest enquiryRequest=new EnquiryRequest(accountNumber);
+            String name=userService.nameEnquiry(enquiryRequest);
+            return name;
+        }catch (Exception e){
+            throw new TransactionException("Error in retrieving name "+e.getMessage(),e);
+        }
+    }
+
+   @GetMapping("{accountNumber}")
+   public ResponseEntity<BankResponse> getByAccountNumber(@PathVariable String accountNumber) {
+      try{
+          BankResponse response = userService.getAccountByAccountNumber(accountNumber);
+          return new ResponseEntity<>(response, HttpStatus.FOUND);
+      }catch (Exception e){
+          throw new TransactionException("Error in retrieving account"+e.getMessage(),e);
+      }
+   }
+
+    @PostMapping("creditAmount")
+    public ResponseEntity<BankResponse> creditAmount(@RequestBody CreditDebitRequest creditDebitRequest)
+    {
+        try{
+            BankResponse response = userService.creditAmount(creditDebitRequest);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }catch (Exception e){
+            throw new TransactionException("Error in crediting amount"+e.getMessage(),e);
+        }
+    }
+
+    @PostMapping("debitAmount")
+    public ResponseEntity<BankResponse> debitAmount(@RequestBody CreditDebitRequest creditDebitRequest){
+        try {
+            BankResponse response = userService.debitAmount(creditDebitRequest);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }catch (Exception e){
+            throw new TransactionException("Error in debiting amount"+e.getMessage(),e);
+        }
+    }
+
+    @PostMapping("transfer")
+    public ResponseEntity<BankResponse> transferAmount(@RequestBody TransferRequest transferRequest)
+    {
+        try {
+            BankResponse response = userService.transferAmount(transferRequest);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }catch (Exception e){
+            throw new TransactionException("Error in transferring amount"+e.getMessage(),e);
+        }
+    }
+
+    @PutMapping("{accountNumber}")
+    public ResponseEntity<BankResponse> updateAccount(@PathVariable String accountNumber,@RequestBody UserRequest userRequest) {
+        try{
+            BankResponse response = userService.updateAccount(accountNumber,userRequest);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }catch (Exception e){
+            throw new TransactionException("Error in updating account"+e.getMessage(),e);
+        }
+    }
+
+    @PatchMapping("{accountNumber}")
+    public ResponseEntity<BankResponse> patchAccount(@PathVariable String accountNumber,@RequestBody Map<String, Object> userRequest) {
+        try{
+            BankResponse response = userService.patchAccount(accountNumber,userRequest);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }catch (Exception e){
+            throw new TransactionException("Error in patching account"+e.getMessage(),e);
+        }
+    }
+
+    @DeleteMapping("{accountNumber}")
+    public ResponseEntity<BankResponse> deleteAccount(@PathVariable String accountNumber) {
+        try{
+            BankResponse response = userService.deleteAccount(accountNumber);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }catch (Exception e){
+            throw new TransactionException("Error in deleting account"+e.getMessage(),e);
+        }
+    }
+}

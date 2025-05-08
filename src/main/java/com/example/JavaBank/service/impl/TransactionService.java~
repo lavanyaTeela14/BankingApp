@@ -1,0 +1,4 @@
+package com.example.JavaBank.service.impl;
+
+public interface TransactionService {
+}

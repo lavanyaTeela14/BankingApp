@@ -1,0 +1,15 @@
+package com.example.JavaBank.exception;
+
+public class BankException extends RuntimeException {
+    private final String errorCode;
+
+    public BankException(String message, String errorCode) {
+        super(message);
+        this.errorCode = errorCode;
+    }
+
+    public String getErrorCode() {
+        return errorCode;
+    }
+    
+}
